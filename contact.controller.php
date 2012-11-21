@@ -42,8 +42,9 @@ class contactController extends contact {
 		if(count($extra_keys)) {
 			foreach($extra_keys as $idx => $extra_item) {
 				$value = '';
-				if(isset($obj->{'extra_vars'.$idx})) $value = trim($obj->{'extra_vars'.$idx});
-				elseif(isset($obj->{$extra_item->name})) $value = trim($obj->{$extra_item->name});
+				if(isset($obj->{'extra_vars'.$idx})) $value = $obj->{'extra_vars'.$idx};
+				elseif(isset($obj->{$extra_item->eid})) $value = $obj->{$extra_item->eid};
+				if(!is_array($value)) $value = trim($value);
 				if(!isset($value)) continue;
 				//check if extra item is required
 				if($extra_item->is_required == 'Y' && $value==""){
@@ -53,8 +54,21 @@ class contactController extends contact {
 				if($extra_item->type == 'email_address' && !$oMail->isVaildMailAddress($value)){
 					return new Object(-1, 'Please input a valid email for '.$extra_item->name);
 				}
-				$mail_content[$extra_item->name] = $value;
-				$content .= $extra_item->name . ':  ' . $value . "\r\n";
+				if($extra_item->type == "tel")
+				{
+					$mail_content[$extra_item->eid] = $obj->{'extra_vars'.$idx}[2];
+					$content .= $extra_item->eid. ':  ' . $obj->{'extra_vars'.$idx}[2] . "\r\n";
+				}
+				elseif(is_array($obj->{'extra_vars'.$idx}))
+				{
+					$mail_content[$extra_item->eid] = implode(",",$obj->{'extra_vars'.$idx});
+					$content .= $extra_item->eid. ':  ' . implode(",",$obj->{'extra_vars'.$idx}) . "\r\n";
+				}
+				else
+				{
+					$mail_content[$extra_item->eid] = $value;
+					$content .= $extra_item->eid. ':  ' . $value . "\r\n";
+				}
 			}
 		}
 
@@ -72,7 +86,8 @@ class contactController extends contact {
 		$mail_content['Comments'] = htmlspecialchars($obj->comment);
 
 		$oMail->setContent(htmlspecialchars($content_all));
-		$oMail->setSender("XE Contact Us", $obj->email);
+		//$oMail->setSender("XE Contact Us", $obj->email);
+		$oMail->setSender($obj->email, $obj->email);
 
 		$target_mail = explode(',',$this->module_info->admin_mail);
 
@@ -98,6 +113,7 @@ class contactController extends contact {
 			}
 			$oMail->send();
 		}
+
 
 		if(isset($_SESSION['mail_content']))
 			unset($_SESSION['mail_content']);
