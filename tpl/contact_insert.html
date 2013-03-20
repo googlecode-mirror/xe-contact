@@ -9,6 +9,7 @@
 <input type="hidden" name="act" value="procContactAdminInsertContact" />
 <input type="hidden" name="page" value="{$page}" />
 <input type="hidden" name="module_srl" value="{$module_info->module_srl}" />
+<input cond="$mid || $module_srl" type="hidden" name="success_return_url" value="{getRequestUriByServerEnviroment()}" />
 	<div class="table">
 		<table cellspacing="0" class="rowTable">
 
@@ -77,6 +78,14 @@
 			<th scope="col"><div>{$lang->interval}</div></th>
 			<td>
 				<input type="text" name="interval" value="{$module_info->interval}" class="inputTypeText" /> {$lang->unit_min}
+				<p>{$lang->about_interval}</p>
+			</td>
+		</tr>
+		<tr>
+			<th scope="col"><div>{$lang->grant}</div></th>
+			<td>
+				<input type="radio" name="send_grant_all" value="Y" checked="checked"|cond="$module_info->send_grant_all== 'Y'" /> {$lang->grant_to_all}
+				<input type="radio" name="send_grant_all" value="N" checked="checked"|cond="$module_info->send_grant_all!= 'Y'" /> {$lang->grant_to_login_user}
 				<p>{$lang->about_interval}</p>
 			</td>
 		</tr>
