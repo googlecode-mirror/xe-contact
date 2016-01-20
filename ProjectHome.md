@@ -1,0 +1,1 @@
+A new XE module called ContactUs has been uploaded, it allows XE users add a Contact Us page to XE.
